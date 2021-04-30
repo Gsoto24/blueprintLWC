@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Course_SY1_TotalHours__c</fullName>
+    <externalId>false</externalId>
+    <formula>Course1_SY1_Hours__c + Course2_SY1_Hours__c + Course3_SY1_Hours__c + Course4_SY1_Hours__c + Course5_SY1_Hours__c + Course6_SY1_Hours__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Course-SY1-TotalHours</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

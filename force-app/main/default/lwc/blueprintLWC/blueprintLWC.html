@@ -1,0 +1,697 @@
+<template>
+  <!-- Layout Listing Header -->
+  <lightning-layout class="slds-grid_align-center" style="width:1300px;">
+    <div class="slds-align_absolute-center">
+      <h1 class="slds-text-heading_large">Student Blueprint</h1>
+    </div>
+  </lightning-layout>
+  <!-- Top Half lightning-layout -->
+  <lightning-layout class="slds-grid_align-center" style="width:1300px;">
+    <!-- Layout for BannerID Search -->
+    <template if:false={contactVerified}>
+      <lightning-layout-item
+        padding="around-small"
+        class="slds-grid_align-center" style="border: 1px solid rgb(212, 212, 212);border-radius: 5px;width: 275px;margin: 20px;"
+      >
+        <lightning-input
+          name="BannerID"
+          label="Please enter your A-number"
+          onchange={setBannerID}
+          style="text-align: center;"
+        ></lightning-input>
+        <div class="separator" style="color: rgb(212, 212, 212);margin-top: 5px;">And</div>
+        <lightning-input
+          name="BannerID"
+          label="Date of birth"
+          type = "Date"
+          onchange={setDOB}
+          style="text-align: center;"
+        ></lightning-input>        
+        <div class="slds-align_absolute-center" style="height:5rem">
+          <lightning-button
+            label="Submit"
+            onclick={contactLookupHandler}
+            class="slds-grid_align-center"
+          ></lightning-button>
+        </div>
+      </lightning-layout-item>
+    </template>
+  </lightning-layout>
+
+  <!-- Section only visible if bannerID is sucessfuly entered -->
+  <template if:true={contactVerified}>
+    <!-- Make conditional visabilty if edit is chosen    -->
+
+    <div if:false={isLoaded} class="exampleHolder">
+      <lightning-spinner variant="brand" alternative-text="Loading" size="large" style="position: fixed;"></lightning-spinner>
+    </div>
+
+    <!-- Modal Popup -->
+    <template if:true={isModalOpen}>
+      <!-- Modal/Popup Box LWC starts here -->
+      <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large">
+          <div class="slds-modal__container">
+              <!-- Modal/Popup Box LWC header here -->
+              <header class="slds-modal__header">
+                  <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                      <lightning-icon icon-name="utility:close"
+                          alternative-text="close"
+                          variant="inverse"
+                          size="small" ></lightning-icon>
+                      <span class="slds-assistive-text">Close</span>
+                  </button>
+                  <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Modal/PopUp Box header LWC</h2>
+              </header>
+              <!-- Modal/Popup Box LWC body starts here -->
+              <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                  <p><b>Modals/Popup Box are used to display content in a layer above the app.
+                  </b></p>
+                  <p><b>This paradigm is used in cases such as the creation or editing of a record, as well as various types of messaging and wizards.
+                  </b></p>
+              </div>
+              <!-- Modal/Popup Box LWC footer starts here -->
+              <footer class="slds-modal__footer">
+                  <button class="slds-button slds-button_neutral" onclick={closeModal} title="Cancel">Cancel</button>
+                  <button class="slds-button slds-button_brand" onclick={submitDetails} title="OK">OK</button>
+              </footer>
+          </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>    
+
+        <!-- Top Half - Block to list contact based information -->
+        <lightning-layout class="slds-grid_align-center" style="width:1300px;">
+                <lightning-layout-item padding="around-small">
+
+                    <div style="border: 1px solid rgb(212, 212, 212);border-radius: 5px;width: 1000px;">
+
+                      <div style="margin: 10px;overflow: hidden;">
+                        <h3>Student Information:</h3>
+                        <lightning-record-view-form
+                        record-id={responseJSON.ContactVar.Id}
+                        object-api-name="Contact"
+                        density="comfy">
+                        <div>
+                          <div style="margin-right: 10px;float: left;">
+                            <lightning-output-field field-name="TargetX_SRMb__BannerID__c"></lightning-output-field>
+                          </div>
+                          <div style="margin-right: 10px;float: left;">
+                            <lightning-output-field field-name="TargetX_SRMb__College__c"></lightning-output-field>
+                          </div>                        
+                          <div style="margin-right: 10px;float: left;">
+                            <lightning-output-field field-name="TargetX_SRMb__Anticipated_Major__c"></lightning-output-field>
+                          </div>                          
+                          <div style="margin-right: 10px;float: left;">
+                            <lightning-output-field field-name="IIT_Primary_Academic_Advisor_Name_Latest__c"></lightning-output-field>
+                          </div>                                       
+                          <div style="margin-right: 10px;float: left;">
+                            <lightning-output-field field-name="IIT_Academic_Advisor_Email_Latest__c"></lightning-output-field>
+                          </div>                                                                                           
+                        </div>
+                          
+                                                                                                          
+
+                        </lightning-record-view-form>                            
+                      </div>
+                    </div>
+                    <template if:true={AdvisorCommentsPresent}>
+                        <div style="border: 1px solid rgb(212, 212, 212);border-radius: 5px;width: 1000px; margin-top:5px;">
+                            <div style="margin: 10px;overflow: hidden;">
+                          <h3 style="color:green">Your advisor recently commented on your Student Blueprint!</h3>
+                          <lightning-record-view-form
+                        record-id={responseJSON.ContactVar.Id}
+                        object-api-name="Contact"
+                        density="comfy">
+                        <div style="margin-right: 10px;float: left;">
+                          <lightning-output-field field-name="IIT_Comments_from_Advisor__c"></lightning-output-field>
+                        </div>                        
+
+                        </lightning-record-view-form>
+                        </div> 
+                        </div>                   
+                    </template>
+
+                    <div style="border: 1px solid rgb(212, 212, 212);border-radius: 5px;width: 1000px; height:300px; margin-top:5px;">
+                      <div style="display: inline-block;width: 450px;margin: 10px;">
+                        <p style="font-weight: bold;">How will you Elevate your Illinois Tech experience outside the classroom?</p>
+                        <p style="font-size: 12px;margin-top: 5px;">Elevate is the umbrella organization at Illinois Tech that connects students with experiential opportunities that allow them to learn the valuable skills that will enable their upward trajectory.</p>
+                        <p style="font-size: 12px;margin-top: 10px;">Use this space to draft out your experiential learning aspirations, such as international experiences, internships and more. Visit <a href = 'https://www.iit.edu/elevate' target="_blank" rel="noopener noreferrer">www.iit.edu/elevate</a> as a starting point for ideas!</p>
+                      </div>
+                      <div style="display: inline-block;float: right; margin: 10px; width:500px;">
+                        <lightning-record-edit-form
+                        record-id={responseJSON.ContactVar.Id}
+                        object-api-name="Contact" onsuccess={showToast}                        
+                        >
+                        <div style="display: inline-block;height: 250px;" data-id= 'Elevate_Goals_ID'>
+                                <lightning-input-field field-name="IIT_Elevate_Goals__c" style="width:500px;">
+                                </lightning-input-field>
+                                <lightning-button class="slds-m-top_small" variant="brand" type="submit" name="update" label="Save" style="float: right;" onclick={showSpinner}>
+                              </lightning-button>                                    
+                        </div>
+
+                        </lightning-record-edit-form>                            
+                      </div>                        
+                    </div>                    
+                </lightning-layout-item>
+        </lightning-layout>
+      
+      <!-- Bottom Half - Academic Years         -->
+      <lightning-accordion allow-multiple-sections-open active-section-name = {activeSections} style="width:1300px;">
+         <template for:each={responseJSON.BluePrintList} for:item="blueprint" for:index="index">
+
+          <!-- Tiles listing each BP Year X -->
+          <lightning-accordion-section key={blueprint} name={blueprint.IIT_Academic_Year_formulaText__c} label={blueprint.IIT_Academic_Year_formulaText__c}>
+            <div style="border: 1px solid rgb(212, 212, 212);border-radius: 5px;width: 500px;text-align: center;margin: 0 auto;">
+                <h3>Access Course Catalogue <a href="https://www.iit.edu/academics/course-catalog" target="_blank">here.</a></h3>
+            </div>
+            <!-- Record Edit Form -->
+            <lightning-record-edit-form onsuccess={updageGaugeData} record-id={blueprint.Id} object-api-name="IIT_Student_Blueprint__c" density="comfy">
+
+          <!-- Each Semester for Year -->
+          <lightning-layout class="slds-grid_align-center">
+            <!-- <div class="c-container"> -->
+                            
+            <!-- Fall Semester                 -->
+            <lightning-layout-item padding="around-small">
+                
+                    <lightning-card title="Fall" style="padding:5px">
+
+                        <!-- horizontal layout for blueprint record data     -->
+                        
+
+                        <lightning-layout style="padding:5px" class="slds-grid_align-center">
+                            <!-- Vertical layout for Course Section-->
+
+                            <div class="slds-grid slds-grid_vertical" style="width:270px;">
+                            <div
+                                class="slds-box slds-theme_default"
+                                style="height: 525px;"
+                            >
+                                <h3>Course</h3>
+                                <lightning-input-field
+                                field-name="IIT_Course_1_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_Course_2_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_Course_3_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_Course_4_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_Course_5_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_Course_6_fall__c"
+                                ></lightning-input-field>                                
+                                <br />
+                                <br />
+                            </div>
+                            
+                            <div
+                                class="slds-box slds-theme_default"
+                                style="height:570px;"
+                            >
+                                <h3>Elevate experiences</h3>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram1_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram2_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram3_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram4_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram5_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram6_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram7_fall__c"
+                                ></lightning-input-field>                                
+                            </div>
+                            </div>
+
+                            <!-- Vertical layout for Hours/wk Section-->
+                            <div class="slds-grid slds-grid_vertical" style="width: 125px;">
+                            
+                            <div class="slds-box slds-theme_default">
+                                <h3>Credit hours</h3>
+                                <lightning-input-field
+                                field-name="IIT_Course_1_Hours_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_Course_2_Hours_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_Course_3_Hours_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_Course_4_Hours_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_Course_5_Hours_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_Course_6_Hours_fall__c"
+                                ></lightning-input-field>                                
+                                <br />
+                                <p>Courses</p>
+                                <lightning-output-field
+                                field-name="IIT_Courses_Total_hours_committed_fall__c"
+                                ></lightning-output-field>
+                            </div>
+                            
+                            <div class="slds-box slds-theme_default" style="height:570px;">
+                                <h3>Hours/Week</h3>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram1_Hours_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram2_Hours_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram3_Hours_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram4_Hours_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram5_Hours_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram6_Hours_fall__c"
+                                ></lightning-input-field>
+                                <lightning-input-field
+                                field-name="IIT_ElevateProgram7_Hours_fall__c"
+                                ></lightning-input-field>                                
+                                <br />
+                                <p>Elevate</p>
+                                <lightning-output-field
+                                field-name="IIT_Elevate_Total_hours_committed_fall__c"
+                                ></lightning-output-field>
+                            </div>                            
+                            </div>
+                            
+                        </lightning-layout>
+                        <!-- Gauge code1 -->
+                        <lightning-layout style="padding:5px" class="slds-grid_align-center">
+                          <div class="slds-box slds-theme_default" style="height: 200px;padding: 0px;width: 395px;">
+                            <div style="text-align: center;height: 30px;font-size: 25px;" data-id={blueprint.IIT_guagediv_data_id1__c}> {blueprint.TotalHours_Fall} Hours</div>
+                            <canvas data-id={blueprint.IIT_guagecanvas_data_id1__c} style="width: 200px; height: 100px; margin-left: auto; margin-right: auto; display: block;"></canvas>
+                            <div style="text-align: center;height: 20px;font-weight: bold;">
+                              Total Hours / Week
+                              <hr style="margin:0 auto;width: 150px;margin-bottom: 10px;">
+                              <br>
+                            </div>
+                            
+                            <div style="text-align: center; height: 47px; font-weight: bold;">
+                              <div style="display: inline-block; width: 100px;">
+                                 Course work
+                                 <div>
+                                    <span style="color: grey;">{blueprint.IIT_Courses_Total_hours_committed_fall__c} hrs.</span>
+                                 </div>
+                              </div>
+                              <div style="display: inline-block; width: 100px;">
+                                 Elevate
+                                 <div> 
+                                    <span style="color: grey;"> {blueprint.IIT_Elevate_Total_hours_committed_fall__c} hrs.</span>
+                                 </div>
+                              </div>
+                              <div style="display: inline-block; width: 100px;">
+                                 Wellness
+                                 <div>
+                                    <span style="color: grey;"> {wellnessHours}hrs.</span>
+                                 </div>
+                              </div>
+                           </div>
+
+                          </div>                          
+                        </lightning-layout>
+                        
+                    </lightning-card>
+            </lightning-layout-item>
+
+            <!-- Spring Semester                 -->
+            <lightning-layout-item padding="around-small">
+                
+              <lightning-card title="Spring" style="padding:5px">
+
+                  <!-- horizontal layout for blueprint record data     -->
+                  
+
+                  <lightning-layout style="padding:5px" class="slds-grid_align-center">
+                      <!-- Vertical layout for Course Section-->
+
+                      <div class="slds-grid slds-grid_vertical" style="width:270px;">
+                      <div
+                          class="slds-box slds-theme_default"
+                          style="height: 525px;"
+                      >
+                          <h3>Course</h3>
+                          <lightning-input-field
+                          field-name="IIT_Course_1_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_2_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_3_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_4_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_5_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_6_spring__c"
+                          ></lightning-input-field>                          
+                          <br />
+                          <br />
+                      </div>
+                      <!-- </lightning-record-edit-form> -->
+                      <!-- <lightning-record-view-form
+                                                          record-id="a4u3C0000005OZC"
+                                                          object-api-name="IIT_Student_Blueprint__c"> -->
+                      <div
+                          class="slds-box slds-theme_default"
+                          style="height:570px;"
+                      >
+                          <h3>Elevate experiences</h3>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram1_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram2_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram3_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram4_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram5_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram6_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram7_spring__c"
+                          ></lightning-input-field>                          
+                      </div>
+                      </div>
+
+                      <!-- Vertical layout for Hours/wk Section-->
+                      <div class="slds-grid slds-grid_vertical" style="width: 125px;">
+                      
+                      <div class="slds-box slds-theme_default">
+                          <h3>Credit hours</h3>
+                          <lightning-input-field
+                          field-name="IIT_Course_1_Hours_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_2_Hours_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_3_Hours_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_4_Hours_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_5_Hours_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_6_Hours_spring__c"
+                          ></lightning-input-field>                          
+                          <br />
+                          <p>Courses</p>
+                          <lightning-output-field
+                          field-name="IIT_Courses_Total_hours_committed_spring__c"
+                          ></lightning-output-field>
+                      </div>
+                      
+                      <div class="slds-box slds-theme_default" style="height:570px;">
+                          <h3>Hours/Week</h3>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram1_Hours_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram2_Hours_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram3_Hours_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram4_Hours_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram5_Hours_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram6_Hours_spring__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram7_Hours_spring__c"
+                          ></lightning-input-field>                          
+                          <br />
+                          <p>Elevate</p>
+                          <lightning-output-field
+                          field-name="IIT_Elevate_Total_hours_committed_spring__c"
+                          ></lightning-output-field>
+                      </div>
+                      <!-- </lightning-record-view-form> -->
+                      </div>
+
+                  </lightning-layout>                  
+                        <!-- Gauge code2 -->
+                        <lightning-layout style="padding:5px" class="slds-grid_align-center">
+                          <div class="slds-box slds-theme_default" style="height: 200px;padding: 0px;width: 395px;">
+                            <div  style="text-align: center;height: 30px;font-size: 25px;" data-id={blueprint.IIT_guagediv_data_id2__c}>{blueprint.TotalHours_Spring} Hours</div>
+                            <canvas data-id={blueprint.IIT_guagecanvas_data_id2__c} style="width: 200px; height: 100px; margin-left: auto; margin-right: auto; display: block;"></canvas>
+                            <div style="text-align: center;height: 20px;font-weight: bold;">
+                              Total Hours / Week
+                              <hr style="margin:0 auto;width: 150px;margin-bottom: 10px;">
+                              <br>
+                            </div>
+                            <div style="text-align: center; height: 47px; font-weight: bold;">
+                              <div style="display: inline-block; width: 100px;">
+                                 Course work
+                                 <div>
+                                    <span style="color: grey;"> {blueprint.IIT_Courses_Total_hours_committed_spring__c} hrs.</span>
+                                 </div>
+                              </div>
+                              <div style="display: inline-block; width: 100px;">
+                                 Elevate
+                                 <div> 
+                                    <span style="color: grey;"> {blueprint.IIT_Elevate_Total_hours_committed_spring__c} hrs.</span>
+                                 </div>
+                              </div>
+                              <div style="display: inline-block; width: 100px;">
+                                 Wellness
+                                 <div>
+                                    <span style="color: grey;"> {wellnessHours} hrs.</span>
+                                 </div>
+                              </div>                              
+                           </div>   
+                           <div style="text-align: center;">
+                              <span><a href="#" onclick={openModal}>What do these guages mean?</a></span>
+                           </div>                                                    
+                          </div>                          
+                        </lightning-layout>                  
+                  <!-- <hr /> -->
+              </lightning-card>
+            </lightning-layout-item>            
+
+            <!-- Summer/Winter Semester                 -->
+            <lightning-layout-item padding="around-small">
+                
+              <lightning-card title="Summer/Winter" style="padding:5px">
+
+                  <!-- horizontal layout for blueprint record data     -->
+                  <lightning-layout style="padding:5px" class="slds-grid_align-center">
+                      <!-- Vertical layout for Course Section-->
+
+                      <div class="slds-grid slds-grid_vertical" style="width:270px;">
+                      <div
+                          class="slds-box slds-theme_default"
+                          style="height: 525px;"
+                      >
+                          <h3>Course</h3>
+                          <lightning-input-field
+                          field-name="IIT_Course_1_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_2_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_3_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_4_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_5_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_6_sumwin__c"
+                          ></lightning-input-field>                          
+                          <br />
+                          <br />
+                      </div>
+                      
+                      <div
+                          class="slds-box slds-theme_default"
+                          style="height:570px;"
+                      >
+                          <h3>Elevate experiences</h3>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram1_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram2_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram3_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram4_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram5_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram6_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram7_sumwin__c"
+                          ></lightning-input-field>                          
+                      </div>
+                      </div>
+
+                      <!-- Vertical layout for Hours/wk Section-->
+                      <div class="slds-grid slds-grid_vertical" style="width: 125px;">
+                      
+                      <div class="slds-box slds-theme_default">
+                          <h3>Credit hours</h3>
+                          <lightning-input-field
+                          field-name="IIT_Course_1_Hours_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_2_Hours_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_3_Hours_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_4_Hours_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_5_Hours_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_Course_6_Hours_sumwin__c"
+                          ></lightning-input-field>                          
+                          <br />
+                          <p>Courses</p>
+                          <lightning-output-field
+                          field-name="IIT_Courses_Total_hours_committed_sumwin__c"
+                          ></lightning-output-field>
+                      </div>
+                      
+                      <div class="slds-box slds-theme_default" style="height:570px;">
+                          <h3>Hours/Week</h3>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram1_Hours_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram2_Hours_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram3_Hours_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram4_Hours_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram5_Hours_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram6_Hours_sumwin__c"
+                          ></lightning-input-field>
+                          <lightning-input-field
+                          field-name="IIT_ElevateProgram7_Hours_sumwin__c"
+                          ></lightning-input-field>                          
+                          <br />
+                          <p>Elevate</p>
+                          <lightning-output-field
+                          field-name="IIT_Elevate_Total_hours_committed_sumwin__c"
+                          ></lightning-output-field>
+                      </div>
+
+                      </div>
+
+                  </lightning-layout>
+                        <!-- Gauge code3 -->
+                        <lightning-layout style="padding:5px" class="slds-grid_align-center">
+                          <div class="slds-box slds-theme_default" style="height: 200px;padding: 0px;width: 395px;">
+                            <div style="text-align: center;height: 30px;font-size: 25px;" data-id={blueprint.IIT_guagediv_data_id3__c}>{blueprint.TotalHours_SumWin} Hours</div>
+                            <canvas data-id={blueprint.IIT_guagecanvas_data_id3__c} style="width: 200px; height: 100px; margin-left: auto; margin-right: auto; display: block;"></canvas>
+                            <div style="text-align: center;height: 20px;font-weight: bold;">
+                              Total Hours / Week
+                              <hr style="margin:0 auto;width: 150px;margin-bottom: 10px;">
+                              <br>
+                            </div>
+                            <div style="text-align: center; height: 47px; font-weight: bold;">
+                              <div style="display: inline-block; width: 100px;">
+                                 Course work
+                                 <div>
+                                    <span style="color: grey;"> {blueprint.IIT_Courses_Total_hours_committed_sumwin__c} hrs.</span>
+                                 </div>
+                              </div>
+                              <div style="display: inline-block; width: 100px;">
+                                 Elevate
+                                 <div> 
+                                    <span style="color: grey;"> {blueprint.IIT_Elevate_Total_hours_committed_sumwin__c} hrs.</span>
+                                 </div>
+                              </div>
+                              <div style="display: inline-block; width: 100px;">
+                                 Wellness
+                                 <div>
+                                    <span style="color: grey;"> {wellnessHours} hrs.</span>
+                                 </div>
+                              </div>
+                           </div>                            
+                          </div>                          
+                        </lightning-layout>                  
+                  <!-- <hr /> -->
+              </lightning-card>
+            </lightning-layout-item>            
+
+            <!-- End of Record Edit Form -->
+            
+          </lightning-layout>
+          <div style="width: 200px; height: 50px; display: block;margin: 0 auto;">
+                <lightning-button class="slds-button slds-button_brand slds-button_stretch" variant="brand" type="submit" name="update" label="Save" style="float: right;" onclick={showSpinner}></lightning-button>
+          </div>          
+        </lightning-record-edit-form>
+          </lightning-accordion-section> 
+          
+        </template>                 
+      
+
+      </lightning-accordion>
+
+    
+  </template>
+
+</template>

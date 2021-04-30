@@ -1,0 +1,15 @@
+{
+  "orgName": "Blueprint ScratchOrg",
+  "edition": "Developer",
+  "features": [],
+  "hasSampleData": true,
+  "settings": {
+    "orgPreferenceSettings": {
+      "s1DesktopEnabled": true
+    },
+    "quoteSettings": {
+      "enableQuote" : true
+    }
+  }
+}
+ 
