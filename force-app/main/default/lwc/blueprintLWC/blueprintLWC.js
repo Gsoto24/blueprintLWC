@@ -6,16 +6,26 @@ import { loadScript } from 'lightning/platformResourceLoader';
 import { loadStyle } from 'lightning/platformResourceLoader';
 import CUSTOM_CSS from '@salesforce/resourceUrl/BlueprintCSS';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent'
+import BlueprintCourseHrs_LOGO from '@salesforce/resourceUrl/BlueprintCourseHrs';
+import BlueprintElevateHrs_LOGO from '@salesforce/resourceUrl/BlueprintElevateHrs';
+import BlueprintWellnessHrs_LOGO from '@salesforce/resourceUrl/BlueprintWellnessHrs';
+
 
 
 
 export default class BlueprintLWC extends LightningElement {
+    BlueprintCourseHrs_IMG = BlueprintCourseHrs_LOGO;
+    BlueprintElevateHrs_IMG = BlueprintElevateHrs_LOGO;
+    BlueprintWellnessHrs_IMG = BlueprintWellnessHrs_LOGO;
     @api isLoaded = false;
-    activeSections = ['Academic Year: 2021 - 2022','Academic Year: 2021 - 2022',
-                    'Academic Year: 2022 - 2023','Academic Year: 2023 - 2024',
-                    'Academic Year: 2024 - 2025', 'Academic Year: 2025 - 2026',
-                    'Academic Year: 2026 - 2027','Academic Year: 2027 - 2028',
-                    'Academic Year: 2028 - 2029','Academic Year: 2029 - 2030'];
+    // activeSections = ['Academic Year: 2021 - 2022','Academic Year: 2021 - 2022',
+    //                 'Academic Year: 2022 - 2023','Academic Year: 2023 - 2024',
+    //                 'Academic Year: 2024 - 2025', 'Academic Year: 2025 - 2026',
+    //                 'Academic Year: 2026 - 2027','Academic Year: 2027 - 2028',
+    //                 'Academic Year: 2028 - 2029','Academic Year: 2029 - 2030'];
+    @track AcademicYearsList = []
+    @track AcademicYearsToDisplay = []
+    @track AcademicYearsOptionMap = {}
     @track contactBannerID = null;
     @track contactDOB = new Date(); 
     @track contactVerified = false;
@@ -74,6 +84,15 @@ export default class BlueprintLWC extends LightningElement {
         this.dispatchEvent(event);
         
     }
+
+
+    get options() {
+        this.AcademicYearsOptionMap = this.AcademicYearsList.map(x => {            
+            return({label: x, value: x});
+          });
+          return this.AcademicYearsOptionMap;
+    }
+
     showSpinner()
     {
         this.isLoaded = false;
@@ -128,15 +147,16 @@ export default class BlueprintLWC extends LightningElement {
     {
         var Scope = this;
         var delayInMilliseconds = 7000;
+        Scope.isLoaded = false;
         setTimeout(function() { 
-            Scope.isLoaded = true;      
+            Scope.isLoaded = true;
+            Scope.AcademicYearsToDisplay = [];
         }, delayInMilliseconds);
 
         getBlueprintData({BannerID:this.contactBannerID, DOB:this.contactDOB}).then(response=>{
 
             var WellnessHours = this.wellnessHours;
             this.responseJSON = JSON.parse(response);
-            console.log(this.responseJSON);
 
             this.responseJSON.BluePrintList.forEach(function (item, index) {
                 item.TotalHours_Fall = item.IIT_Total_Committed_Hours_fall__c + WellnessHours;
@@ -147,19 +167,25 @@ export default class BlueprintLWC extends LightningElement {
             if(this.responseJSON.SuccessfulLookup == true)
             {
                 // code to place each IIT_Academic_Year_formulaText__c in list to open accordion view -- review, does not work
-                // this.responseJSON.BluePrintList.forEach(function (item, index) {
-                //     // this.activeSections.push(item.IIT_Academic_Year_formulaText__c);
-                //   });
-                  
-                this.contactVerified = true;
-                // if (this.AdvisorCommentsPresent != null)
-                // {
-                //     this.AdvisorCommentsPresent = true;
-                // }
-                // this.updateReactiveVars(this);
+                this.responseJSON.BluePrintList.forEach(function (item, index) {
+                    Scope.AcademicYearsList.push(item.IIT_Academic_Year_formulaText__c);
+                  });
+                Scope.AcademicYearsToDisplay = Scope.AcademicYearsList;
+                this.contactVerified = true;                
             }
             else{
+
+                    this.isLoaded = true;
+                    const event = new ShowToastEvent({
+                        title: 'Access Not Granted',
+                        message:'If you belive you have encountered an error please contact studentsystem@iit.edu',
+                        variant: 'error',
+                    });
+                    this.dispatchEvent(event);
+                    
+                
                 console.log('Did not grant entry');
+                
             }
         }).catch(error =>{
             console.error(error);
