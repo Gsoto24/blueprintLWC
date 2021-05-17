@@ -193,8 +193,8 @@
                       <div style="border: 1px solid rgb(212, 212, 212);border-radius: 5px;width: 1000px; height:300px; margin-top:5px;">
                         <div style="display: inline-block;width: 450px;margin: 10px;">
                           <p style="font-weight: bold;">How will you Elevate your Illinois Tech experience outside the classroom?</p>
-                          <p style="font-size: 12px;margin-top: 5px;">Elevate is the umbrella organization at Illinois Tech that connects students with experiential opportunities that allow them to learn the valuable skills that will enable their upward trajectory.</p>
-                          <p style="font-size: 12px;margin-top: 10px;">Use this space to draft out your experiential learning aspirations, such as international experiences, internships and more. Visit <a href = 'https://www.iit.edu/elevate' target="_blank" rel="noopener noreferrer">www.iit.edu/elevate</a> as a starting point for ideas!</p>
+                          <p style="font-size: 12px;margin-top: 5px;">Elevate is the umbrella organization at Illinois Tech that connects students with experiential opportunities allowing you to learn valuable skills that will enable their upward trajectory.</p>
+                          <p style="font-size: 12px;margin-top: 10px;">Use the space on the right to draft out your experiential learning aspirations, such as international experiences, research, internships and more. Visit <a href = 'https://www.iit.edu/elevate' target="_blank" rel="noopener noreferrer">www.iit.edu/elevate</a> as a starting point for ideas!</p>
                         </div>
                         <div style="display: inline-block;float: right; margin: 10px; width:500px;">
                           <lightning-record-edit-form
@@ -222,9 +222,8 @@
         <!-- Picklist Code -->
         <div style="width:1300px;">
             <div style="width: 500px; margin: auto; text-align: center;">
-                <p style="font-size: 14px;">
-                  Select an academic year to review or make updates to your Student Blueprint. <b>Please make sure to save your progress once you are done making edits.</b>
-                </p>            
+                <p style="font-size: 14px;">Select an academic year to review or make updates to your Student Blueprint. </p>            
+                <p style="color: red;">Please make sure to <span style="text-decoration: underline;font-weight: 800;">save</span> your progress once you are done making edits!.</p>                
             </div>
 
         </div>
@@ -755,6 +754,10 @@
                     <!-- End of Record Edit Form -->
                     
                   </lightning-layout>
+                  <div style="text-align: center;">
+                    <p c-blueprintlwc_blueprintlwc="" style="color: red;">After making edits, you must <span c-blueprintlwc_blueprintlwc="" style="text-decoration: underline; font-weight: 800;">SAVE</span> to view updates</p>
+                    <br>
+                  </div>                  
                   <div style="width: 200px; height: 50px; display: block;margin: 0 auto;">
                         <lightning-button class="slds-button slds-button_brand slds-button_stretch" variant="brand" type="submit" name="update" label="Save" style="float: right;" onclick={showSpinner}></lightning-button>
                   </div>          
