@@ -7,7 +7,7 @@
         </div>
     </header>  
     <!-- Layout Listing Header -->
-    <lightning-layout class="slds-grid_align-center" style="width:1300px; margin:0 auto; margin-top: 10px;">
+    <lightning-layout class="slds-grid_align-center" style="width:1300px; margin:0 auto; margin-top: 20px;">
       <div class="slds-align_absolute-center">
         <h1 class="slds-text-heading_large">Student Blueprint</h1>
       </div>
@@ -67,13 +67,15 @@
                             size="small" ></lightning-icon>
                         <span class="slds-assistive-text">Close</span>
                     </button>
-                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">What do these guages mean?</h2>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">What do these gauges mean?</h2>
                 </header>
                 <!-- Modal/Popup Box LWC body starts here -->
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
   
                     <div >
-                        <span  style="font-size: 17px;">Your blueprint guauges will display how many hours per week (Out of 168 total hours per week) you have commited to academic and extracuricular activities for the semester. The guages take into account <b >Courses hours</b>, <b >Elevate experiances</b> and <b >Wellness hours</b> to arrive at your total hours/week figure. </span>
+                        <span  style="font-size: 17px;">
+                          Your blueprint gauges will display how many hours per week (out of 168 total hours per week) you have committed to academic and outside-the-classroom activities for the semester. The gauges take into account course hours, study time outside of class, Elevate experiences, and time dedicated to wellness (more explained below) to arrive at your total hours/week figure.
+                        </span>
                         <hr  style="width: 300px; margin: 25px auto;">
                      </div>
                      <div >
@@ -81,10 +83,10 @@
                            <p  style="
                               font-size: 17px;
                               font-weight: bold;
-                              ">Course hours</p>
-                           <span  style="
-                              font-size: 17px;
-                              ">Once you select the courese your plan to enroll in for the semster and fill out the number of credt hours each course is worth, the total number of credit hours are multiplied by 2 and represent your weekly hours commited.</span>
+                              ">Coursework hours</p>
+                           <span  style="font-size: 17px;">
+                            Once you select the courses you plan to enroll in for the semester and fill out the number of credit hours, the total number of credit hours are multiplied by 2.5 to get your Coursework hours total.  The 2.5 multiplier attempts to factor in the time spent on studying and homework. 
+                            </span>
                         </div>
                         <div  style="display: inline-block;width: 400px;float: right;text-align: center;">
                             <img src={BlueprintCourseHrs_IMG} style="height: 127px;">
@@ -98,10 +100,10 @@
                            <p  style="
                               font-size: 17px;
                               font-weight: bold;
-                              ">Elevate experiances (extracurriculars)</p>
+                              ">Elevate experiences (outside-of-the-classroom learning)</p>
                            <span  style="
                               font-size: 17px;
-                              ">Extracurriculars are an important component for any students scheudle. After filling out the elevate experiances portion of the semester blueprint along with the amount of hours you belive you will spend for each category, the total amount of hours will be taken into account.</span>
+                              ">An Elevate experience is any high-quality extracurricular experience. These opportunities enable you to gain real-world skills, thereby elevating your learning at Illinois Tech. Use this space to list your Elevate experiences for the semester and include an estimated hourly commitment per week.  Be sure to include travel time to and from the opportunity, if applicable. The total amount of weekly hours will be included in your gauge.</span>
                         </div>
                         <div  style="display: inline-block;width: 400px;float: right;text-align: center;">
                             <img src={BlueprintElevateHrs_IMG} style="height: 127px;">
@@ -117,7 +119,7 @@
                               ">Wellness hours</p>
                            <span  style="
                               font-size: 17px;
-                              ">It is important for every student to have plenty of rest and time for self care, a static 84 hours a week has been designated for this category.</span>
+                              ">Caring for your mental, emotional, and physical health is essential. The gauge includes a static 84 hours per week which accounts for 8 hours of sleep per night, 3 hours for meals/breaks per day, and 1 hour for physical activity daily.  However, you know yourself best. If you need to factor in more than 84 hours per week for wellness, keep this in mind as you view the gauge. </span>
                         </div>
                         <div  style="display: inline-block;width: 400px;float: right;text-align: center;">
                             <img src={BlueprintWellnessHrs_IMG} style="height: 127px;">
@@ -262,7 +264,7 @@
                                         style="height: 525px;"
                                     >
                                         <h3>Course</h3>
-                                        <lightning-input-field
+                                        <lightning-input-field 
                                         field-name="IIT_Course_1_fall__c"
                                         ></lightning-input-field>
                                         <lightning-input-field
@@ -318,7 +320,7 @@
                                     
                                     <div class="slds-box slds-theme_default">
                                         <h3>Credit hours</h3>
-                                        <lightning-input-field
+                                        <lightning-input-field 
                                         field-name="IIT_Course_1_Hours_fall__c"
                                         ></lightning-input-field>
                                         <lightning-input-field
@@ -578,7 +580,7 @@
                                       </div>                              
                                    </div>   
                                    <div style="text-align: center;">
-                                      <span><a href="#" onclick={openModal}>What do these guages mean?</a></span>
+                                      <span><a href="#" onclick={openModal}>What do these gauges mean?</a></span>
                                    </div>                                                    
                                   </div>                          
                                 </lightning-layout>                  
