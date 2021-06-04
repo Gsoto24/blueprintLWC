@@ -374,9 +374,6 @@ export default class BlueprintLWC extends LightningElement {
         else if (this.contactVerified == false)
         {
             this.contactLookupHandler();
-            system.debug(UserEmail_var);
-            system.debug(UserId_var);
-
         }
         
     }

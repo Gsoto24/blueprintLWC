@@ -22,7 +22,7 @@ public class IITBluePrintWrapper {
             if(MatchingContactList.size() != 1)
             {
                 SuccessfulLookup = False;
-                ConnectionMessage = 'Banner ID was not found.';
+                ConnectionMessage = 'Account not found.';
             }
             else
             {
@@ -37,6 +37,10 @@ public class IITBluePrintWrapper {
                                 IIT_Elevate_Total_hours_committed_fall__c, IIT_Elevate_Total_hours_committed_spring__c,
                                 IIT_Elevate_Total_hours_committed_sumwin__c from IIT_Student_Blueprint__c 
                                 where Contact__c = :MatchingContactList[0].ID order by Academic_Year__c ASC Limit 5];
+                if (BluePrintList.size() != 5)
+                {
+                    SuccessfulLookup = False;
+                }
                 
             }
             

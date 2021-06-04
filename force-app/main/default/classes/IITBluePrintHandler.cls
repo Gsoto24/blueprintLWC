@@ -148,4 +148,95 @@ public with sharing class IITBluePrintHandler{
         }
     }
 
+    public static void UpdatePrimaryAdvisor(List < TargetX_SRMb__Application__c > newApplicationList, Map<Id,TargetX_SRMb__Application__c> oldApplicationMap, IITTriggerContext triggerContext)
+    {
+        if(triggerContext == IITTriggerContext.AFTER_UPDATE){
+            
+	    list<TargetX_SRMb__Application__c> TargetedApplicationList = new list<TargetX_SRMb__Application__c>();
+            
+        for (TargetX_SRMb__Application__c applicationRecord: newApplicationList)
+        {
+            //Varibale storing the old application record retrieved from oldApplicationMap
+            TargetX_SRMb__Application__c oldApplicationRecord = new TargetX_SRMb__Application__c();
+            oldApplicationRecord = oldApplicationMap.get(applicationRecord.Id);
+            
+            if(oldApplicationRecord.IIT_Primary_Academic_Advisor__c != applicationRecord.IIT_Primary_Academic_Advisor__c)
+            {
+                TargetedApplicationList.add(applicationRecord);
+            }
+                
+        }
+		if(TargetedApplicationList.size() > 0 )
+        {
+            list<Contact> ContactRecordsToUpdate = new list<Contact>();           
+            for (TargetX_SRMb__Application__c applicationRecord: TargetedApplicationList)
+            {
+                Contact ContactRecord = new Contact();
+                ContactRecord.ID = applicationRecord.TargetX_SRMb__Contact__c;
+                
+                ContactRecord.IIT_Primary_Academic_Advisor_Name_Latest__c = applicationRecord.IIT_Primary_Academic_Advisor_Name__c;
+                ContactRecord.IIT_Academic_Advisor_Email_Latest__c = applicationRecord.IIT_Primary_Academic_Advisor_Email__c;              
+                ContactRecordsToUpdate.add(ContactRecord);
+                
+            }
+            Update ContactRecordsToUpdate;            
+            
+        }
+            
+        
+        }
+    }
+    
+    public static void SetAdvisorForBPActivation(List<Contact> newContactsList, Map<ID, Contact> oldContactsMap, IITTriggerContext triggerContext)
+    {
+        if(triggerContext == IITTriggerContext.BEFORE_UPDATE){
+            
+	    list<Contact> TargetedContactList = new list<Contact>();
+            
+        for (Contact contactRecord: newContactsList)
+        {
+
+            Contact oldContactRecord = new Contact();
+            oldContactRecord = oldContactsMap.get(contactRecord.Id);
+            
+            if(oldContactRecord.IIT_Blueprint_Activation__c == False && contactRecord.IIT_Blueprint_Activation__c == True)
+            {
+                TargetedContactList.add(contactRecord);
+            }
+                
+        }            
+            
+		if(TargetedContactList.size() > 0)
+        {
+            //Getting list of contacts to activate for BP
+            list<Contact> newContactList_ToActivate = new list<Contact>();
+            
+            //list of related applications to newContactsList    
+            list<TargetX_SRMb__Application__c> RelatedApplicationList = new list<TargetX_SRMb__Application__c>();
+            RelatedApplicationList = [select id, TargetX_SRMb__Contact__c,IIT_Primary_Academic_Advisor_Name__c,IIT_Primary_Academic_Advisor_Email__c from TargetX_SRMb__Application__c where TargetX_SRMb__Contact__c in :TargetedContactList];    
+            map<ID,TargetX_SRMb__Application__c> IdToApplicationRecordMap = new map<ID, TargetX_SRMb__Application__c>();
+            for (TargetX_SRMb__Application__c AppRecord : RelatedApplicationList)
+            {
+                IdToApplicationRecordMap.put(AppRecord.Id, AppRecord);						            
+            }
+                
+            //Loop to build values for newContactList_ToActivate
+            for (Contact ContactRecord: TargetedContactList) {
+                
+                Contact oldContactRecord = new Contact();
+                oldContactRecord = oldContactsMap.get(ContactRecord.Id);
+                
+                if(oldContactRecord.IIT_Blueprint_Activation__c == False && ContactRecord.IIT_Blueprint_Activation__c == TRUE){
+                    
+                    TargetX_SRMb__Application__c MasterApplicationRecord = IdToApplicationRecordMap.get(ContactRecord.TGTX_Master_Application__c);
+                    ContactRecord.IIT_Primary_Academic_Advisor_Name_Latest__c = MasterApplicationRecord.IIT_Primary_Academic_Advisor_Name__c;
+                    ContactRecord.IIT_Academic_Advisor_Email_Latest__c = MasterApplicationRecord.IIT_Primary_Academic_Advisor_Email__c;
+                }
+                
+            }
+            
+        }                       
+            
+        }
+    }
 }
