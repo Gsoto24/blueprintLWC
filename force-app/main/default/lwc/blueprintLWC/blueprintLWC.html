@@ -1,9 +1,12 @@
 <template>
     <header class="slds-global-header_container">
         <div class="slds-global-header" style="background: white;">
-            <div class="slds-global-header__logo">
-                <span class="slds-assistive-text">Salesforce</span>
+            <div class="slds-global-header__logo" style="float:left; width:100px; margin-left:20px;">
+                <img src={Blueprint_LOGO} style="height: 34px;">
             </div>                
+            <div class="slds-global-header__logo" style="float: right;width: 100px;">
+              <button class="slds-button slds-button_text-destructive" onclick={handleLogout} >Logout</button>
+          </div>                            
         </div>
     </header>  
     <!-- Layout Listing Header -->
@@ -15,12 +18,16 @@
     <!-- Top Half lightning-layout -->
     <lightning-layout class="slds-grid_align-center" style="width:1300px; margin:0 auto;">
       <!-- Layout for BannerID Search -->
-      <template if:false={contactVerified}>
+      <template if:true={contactNotVerified}>
         <lightning-layout-item
           padding="around-small"
-          class="slds-grid_align-center" style="border: 1px solid rgb(212, 212, 212);border-radius: 5px;width: 275px;margin: 20px;"
+          class="slds-grid_align-center" style="border: 1px solid rgb(212, 212, 212);border-radius: 5px; margin: 20px; text-align: center;"
         >
-          <lightning-input
+        <h1 style="color:red">This account is not fully set up, please contact studentsystem@iit.edu for assistance.</h1>
+        <br/>
+        <p>Provide the following information to identify your account</p>
+        <p>User ID: {UserId_var}</p>
+          <!-- <lightning-input
             name="BannerID"
             label="Please enter your A-number"
             onchange={setBannerID}
@@ -40,7 +47,7 @@
               onclick={contactLookupHandler}
               class="slds-grid_align-center"
             ></lightning-button>
-          </div>
+          </div> -->
         </lightning-layout-item>
       </template>
     </lightning-layout>

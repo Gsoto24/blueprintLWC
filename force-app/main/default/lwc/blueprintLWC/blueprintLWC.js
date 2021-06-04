@@ -9,7 +9,8 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent'
 import BlueprintCourseHrs_LOGO from '@salesforce/resourceUrl/BlueprintCourseHrs';
 import BlueprintElevateHrs_LOGO from '@salesforce/resourceUrl/BlueprintElevateHrs';
 import BlueprintWellnessHrs_LOGO from '@salesforce/resourceUrl/BlueprintWellnessHrs';
-
+import Blueprint_LOGO from '@salesforce/resourceUrl/StudentBlueprintLogo';
+import UserId_var from '@salesforce/user/Id';
 
 
 
@@ -17,18 +18,16 @@ export default class BlueprintLWC extends LightningElement {
     BlueprintCourseHrs_IMG = BlueprintCourseHrs_LOGO;
     BlueprintElevateHrs_IMG = BlueprintElevateHrs_LOGO;
     BlueprintWellnessHrs_IMG = BlueprintWellnessHrs_LOGO;
+    Blueprint_LOGO = Blueprint_LOGO;
+    UserId_var = UserId_var;
     @api isLoaded = false;
-    // activeSections = ['Academic Year: 2021 - 2022','Academic Year: 2021 - 2022',
-    //                 'Academic Year: 2022 - 2023','Academic Year: 2023 - 2024',
-    //                 'Academic Year: 2024 - 2025', 'Academic Year: 2025 - 2026',
-    //                 'Academic Year: 2026 - 2027','Academic Year: 2027 - 2028',
-    //                 'Academic Year: 2028 - 2029','Academic Year: 2029 - 2030'];
     @track AcademicYearsList = []
     @track AcademicYearsToDisplay = []
     @track AcademicYearsOptionMap = {}
     @track contactBannerID = null;
     @track contactDOB = new Date(); 
     @track contactVerified = false;
+    @track contactNotVerified = false;
     @track detailBlockVisible = false;
     @track AdvisorCommentsPresent = false;
 
@@ -106,7 +105,7 @@ export default class BlueprintLWC extends LightningElement {
 
         setTimeout(function() {
             
-            getBlueprintData({BannerID:Scope.contactBannerID, DOB:Scope.contactDOB}).then(response=>{
+            getBlueprintData({UserId:UserId_var}).then(response=>{
 
                 Scope.responseJSON = JSON.parse(response);
                 var WellnessHours = Scope.wellnessHours;
@@ -143,7 +142,7 @@ export default class BlueprintLWC extends LightningElement {
     }
     
 
-    contactLookupHandler(event)
+    contactLookupHandler()
     {
         var Scope = this;
         var delayInMilliseconds = 7000;
@@ -152,8 +151,9 @@ export default class BlueprintLWC extends LightningElement {
             Scope.isLoaded = true;
             Scope.AcademicYearsToDisplay = [];
         }, delayInMilliseconds);
+        console.log('runs by contact lookup');
 
-        getBlueprintData({BannerID:this.contactBannerID, DOB:this.contactDOB}).then(response=>{
+        getBlueprintData({UserId:UserId_var}).then(response=>{
 
             var WellnessHours = this.wellnessHours;
             this.responseJSON = JSON.parse(response);
@@ -166,6 +166,8 @@ export default class BlueprintLWC extends LightningElement {
 
             if(this.responseJSON.SuccessfulLookup == true)
             {
+                console.log('Found a valid account');
+                console.log(this.responseJSON);
                 // code to place each IIT_Academic_Year_formulaText__c in list to open accordion view -- review, does not work
                 this.responseJSON.BluePrintList.forEach(function (item, index) {
                     Scope.AcademicYearsList.push(item.IIT_Academic_Year_formulaText__c);
@@ -174,7 +176,9 @@ export default class BlueprintLWC extends LightningElement {
                 this.contactVerified = true;                
             }
             else{
-
+                    this.contactVerified = false;
+                    this.contactNotVerified = true;
+                    console.log('Did not find a valid account');
                     this.isLoaded = true;
                     const event = new ShowToastEvent({
                         title: 'Access Not Granted',
@@ -207,7 +211,6 @@ export default class BlueprintLWC extends LightningElement {
         // this code runs each time markup is rendered & contact is verified
         if (this.contactVerified == true)
         {
-
             Promise.all([
                 loadScript(this, GaugeJS),
                 loadStyle(this, CUSTOM_CSS)
@@ -368,7 +371,21 @@ export default class BlueprintLWC extends LightningElement {
               });              
 
         }
+        else if (this.contactVerified == false)
+        {
+            this.contactLookupHandler();
+            system.debug(UserEmail_var);
+            system.debug(UserId_var);
+
+        }
+        
     }
+    
+    handleLogout() {
+        // /secur/logout.jsp?retUrl=YourLoginpageURL
+        window.location.href = "/studentblueprint/secur/logout.jsp?retUrl=https://test-myiit.cs34.force.com/studentblueprint/";
+
+    }    
 
     
 }
