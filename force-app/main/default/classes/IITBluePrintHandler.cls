@@ -96,6 +96,8 @@ public with sharing class IITBluePrintHandler{
                 UserRecord.ProfileId = '00ej0000001G6JF';
                 
                 UserRecordsToCreateList.add(UserRecord);
+//                PermissionSetAssignment psa = new PermissionSetAssignment (PermissionSetId = '0PS2f000000DKa2', AssigneeId = UserRecord.Id);
+//                permissionSetList.add(psa);                
                 
             }
             
@@ -142,12 +144,42 @@ public with sharing class IITBluePrintHandler{
 //            DML Statements
 			insert UserRecordsToCreateList;
             insert BlueprintRecordsToCreateList;            
+			
+//            Creating User id list to append permission sets via @future method
+			list<ID> UserIDList = new list<ID>(); 
+            for (User UserRecord:UserRecordsToCreateList)
+            {
+                UserIDList.add(UserRecord.id);
+            }
+            if (UserRecordList.size() > 0 )
+            {
+
+
+                for (User UserRecord:UserRecordList)
+                {
+                    UserIDList.add(UserRecord.id);
+                }                		                
+            }
+            assignPermissionSets(UserIDList);
             
         }            
             
         }
     }
 
+    @future
+    private static void assignPermissionSets(List<ID> UserIDList)    
+    {
+        list<user> UserRecordList= [select id from user where id in :UserIDList];
+        List<PermissionSetAssignment> permissionSetList = new List<PermissionSetAssignment>();        
+        for (User UserRecord: UserRecordList)
+        {
+	        PermissionSetAssignment psa = new PermissionSetAssignment (PermissionSetId = '0PS3a000000NuS4', AssigneeId = UserRecord.Id);
+        	permissionSetList.add(psa);  
+        }
+        insert permissionSetList;
+
+    }
     public static void UpdatePrimaryAdvisor(List < TargetX_SRMb__Application__c > newApplicationList, Map<Id,TargetX_SRMb__Application__c> oldApplicationMap, IITTriggerContext triggerContext)
     {
         if(triggerContext == IITTriggerContext.AFTER_UPDATE){
