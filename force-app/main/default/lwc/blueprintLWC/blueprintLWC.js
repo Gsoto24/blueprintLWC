@@ -390,7 +390,7 @@ export default class BlueprintLWC extends LightningElement {
     
     handleLogout() {
         // /secur/logout.jsp?retUrl=YourLoginpageURL
-        window.location.href = "/studentblueprint/secur/logout.jsp?retUrl=https://test-myiit.cs34.force.com/studentblueprint/login";
+        window.location.href = "/studentblueprint/secur/logout.jsp?retUrl=https://myiit.force.com/studentblueprint/login";
 
     }
     
